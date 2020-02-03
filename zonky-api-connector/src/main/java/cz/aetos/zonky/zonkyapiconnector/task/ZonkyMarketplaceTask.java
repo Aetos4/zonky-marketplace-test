@@ -43,7 +43,7 @@ public class ZonkyMarketplaceTask implements Runnable {
 
         List<Marketplace> marketplaces = zonkyAPIService.getMarketplaces(lastPublishedDate);
 
-        storeLastPublishedDate(marketplaces);
+        storeLastPublishedDate(marketplaces, lastPublishedDate);
 
         return marketplaces;
     }
@@ -67,14 +67,13 @@ public class ZonkyMarketplaceTask implements Runnable {
          return (ZonkyDateWrapper) cacheWrapper.get();
     }
 
-    private void storeLastPublishedDate(List<Marketplace> marketplaces) {
+    private void storeLastPublishedDate(List<Marketplace> marketplaces, ZonkyDateWrapper lastDate) {
         if (marketplaces.size() > 0) {
-            ZonkyDateWrapper lastPublishedDate = new ZonkyDateWrapper(
-                    ZonkyDateWrapper.Type.RESPONSE, marketplaces.get(0).getDatePublished());
-            cacheManager.getCache("zonky").put(
-                    "lastPublishedDate", lastPublishedDate);
-            logger.info("Storing lastPublishedDate=" + lastPublishedDate.getDate());
+            lastDate = new ZonkyDateWrapper(ZonkyDateWrapper.Type.RESPONSE, marketplaces.get(0).getDatePublished());
+
         }
+        cacheManager.getCache("zonky").put("lastPublishedDate", lastDate);
+        logger.info("Storing lastPublishedDate=" + lastDate.getDate());
     }
 
 }
